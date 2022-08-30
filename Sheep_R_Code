@@ -8,23 +8,22 @@ library("corrplot")
 #########################################################################################################
 # Models
 
-Pricing<-read.csv("Default Dataset.csv",header = FALSE)
+Pricing<-read.csv("Default Dataset.csv",header = FALSE) # Live weight Sheep Prices 2021
 model <- lm(V2 ~ poly(V1,20),data = Pricing)
 
-area<-c(120,160,250,350)
-labour_cost<-c(285,275,200,145)
-power<-c(175,170,165,150)
-buildings<-c(20,15,15,10)
-Genal_costs1<-c(80,80,60,45)
+area<-c(120,160,250,350) # Size of Farm
+labour_cost<-c(285,275,200,145) # Labour costs from Farm management costing book
+power<-c(175,170,165,150)# Average Power costs from Farm management costing book 
+buildings<-c(20,15,15,10)# Average building maintaince costs from Farm management costing book
+Genal_costs1<-c(80,80,60,45)# General costs from Farm management costing book
 
-Genal_costs <- lm(Genal_costs1 ~ poly(area,2))
+
+# Relationships between farm size and Fixed costs
+Genal_costs <- lm(Genal_costs1 ~ poly(area,2)) 
 power_costs <- lm(power ~ poly(area,2))
 buildings_costs <- lm(buildings ~ poly(area,2))
 labour_costs <- lm(labour_cost ~ poly(area,2))
 
-
-
-plot(Pricing$V2~Pricing$V1)
 
 ########################################################################################################
 startdate <- as.Date("01/01/2023","%d/%m/%Y")
@@ -32,7 +31,7 @@ ram_date<- c("2022-10-15","2022-11-15")   # date ram to ews
 
 # Stocking Density
 Ews_Per_hectare<-seq(8,12,by=2)
-acres<-(seq(100,200,by=50))
+acres<-(seq(100,200,by=50)) # actually in hectares
 
 # Lamb assumptions
 Lambing<-seq(1.10,1.75,by=0.25) # lambing percentage
@@ -47,20 +46,20 @@ Lamb_Loss<-seq(5,20,by=5) # as % (15% is average in Wales)
 Replacement<-seq(0.18,0.25,by=0.02) # % of stock change
 Barrenper<-seq(0.10,0.20,by=0.05) # percentage of barren ewes
 
-## Growth
-weeks8<-seq(0.18,0.28,by=0.02)
-week8towean<-seq(0.14,0.2,by=0.02)
-wean_onwards<-seq(0.12,0.18,by=0.04)
+## Daily Average Gain
+weeks8<-seq(0.18,0.28,by=0.02) # 0 - 8 weeks
+week8towean<-seq(0.14,0.2,by=0.02) # 8 weeks to wean
+wean_onwards<-seq(0.12,0.18,by=0.04) # wean onwards
 
 
 ## Fixed Costs
-wage<-15
+wage<-15 # waage of worker/farmer
 ew_cost<-10 # variable sundries + concentrates
-ew_labour<-2*wage
-labour_Daily<-seq(0.5,1.2,by=0.4) # For 100 lambs per day
-labour_fortnightly<-seq(1,5,by=1.5) # for 100 lambs
-Vet<-seq(3,5,by=2)
-land_rent<-(seq(120,175,by=25))
+ew_labour<-2*wage # Wage per ewe per year
+labour_Daily<-seq(0.5,1.2,by=0.4) # For 100 lambs per day from costings book
+labour_fortnightly<-seq(1,5,by=1.5) # For 100 lambs per fortnight from costings book
+Vet<-seq(3,5,by=2) # vet bills
+land_rent<-(seq(120,175,by=25)) # Land rent per hectare
 
 #########################################################################################################
 
