@@ -1,0 +1,89 @@
+# Sheep Allocation
+#Area<-100
+#ewe_numbers<-Area*(2*2.471)
+#lambsnumber<-ewe_numbers*1.50
+
+Area<-6
+ewe_numbers<-35
+lambsnumber<-ewe_numbers*1.60
+utilisation_percent<-50/100 # First figure is the utilisation
+###################################################################################################################################
+# Born 4kg
+born<-4
+# Growing at 250g/day
+growing<-0.25
+salewight<-34
+
+Monthsonfarm<-((salewight-born)/growing)/30
+
+###################################################################################################################################
+initial_cover<-1800 # this is equvilent of 3cm in winter #https://ahdb.org.uk/knowledge-library/grass-allocation-feed-budgeting-wintering-at-grass
+
+months<-seq(1,12,by=1)
+dayspermonth<-c(30,28,31,30,31,30,31,30,31,31,30,31)
+Growthperday<-c(0,5,10,25,45,30,20,25,20,10,5,0) # Kg DM/ha/day https://www.grasscheckgb.co.uk/
+Growthpermonth<-(Growthperday*dayspermonth)*Area
+
+sum(Growthpermonth)/Area
+
+
+# Sheep consumoption
+# intake/head/day (kg dm/ha/d)
+ewe_weight<-c(65.0,67.0,69.0,67.0,65.0,62.0,62.0,63.0,64.0,64.0,65.0,65.0)
+Allocation_per<-c(2.0,2.0,2.5,4.0,4.0,3.5,2.0,1.5,1.5,2.5,2.5,2.5)
+Sheepeatsday<-Allocation_per*(ewe_weight/100)
+TotalSheepeatsday<-(Sheepeatsday*ewe_numbers)*dayspermonth
+
+# Lambs
+
+# When lambs start to eat and how muh they need needs looking into
+lamb_weight<-c(0,0,0,0,0,15,20,25,30,35,35,0)
+Allocation_perlamb<-c(0,0,0,0,0.5,4,4,4,4,2,0,0)
+lambeatsday<-Allocation_perlamb*(lamb_weight/100)
+Totallambeatsday<-(lambeatsday*lambsnumber)*dayspermonth
+
+
+Total_Animal_allocation<-Totallambeatsday+TotalSheepeatsday
+
+Animal_allocation<-((TotalSheepeatsday+Totallambeatsday)/dayspermonth)/Area
+Difference<-Growthperday-Animal_allocation
+####################################################################################################################
+results<-data.frame("Total_DM"=initial_cover,"allocation"=initial_cover*utilisation_percent)
+for(i in 1:length(months)){
+  
+  # The total after loss vs the difference
+  res<-(results$Total_DM[i])+(Difference[i]*dayspermonth[i])
+
+  # The actual utilisation allocation vs the difference
+  allocation<-(results$Total_DM[i]*utilisation_percent)+(Difference[i]*dayspermonth[i])
+
+  results<-rbind(results,data.frame("Total_DM"=res,"allocation"=allocation))
+}
+####################################################################################################################
+
+
+plot(results$Total_DM[1:12]~months,type="l",col="darkgreen",ylim=c(0,max(results$Total_DM[1:12])))
+points(results$allocation[1:12]~months,type="l",col="red",ylim=c(0,max(results$Total_DM[1:12])))
+points(Total_Animal_allocation~months,type="l",col="darkblue")
+
+
+
+
+
+
+results$utilised<-results$Total_DM*(50/100)
+
+plot(Growthperday~months,type="l",col="blue")
+points(TotalSheepeatsday~months,type="l",col="red")
+
+data.frame(rbind("Month"=month.name,"Pature DM/KG/HA"=results$Total_DM[2:13],"Lamb"=Allocation_perlamb,"Ewe"=Allocation_per))
+
+
+data.frame(rbind("Month"=month.name,"Pature DM/KG/HA"=round(results$Total_DM[2:13],0),"Wight kg"=lamb_weight,"Lamb"=Allocation_perlamb,"DM/KG/HA/LAMB"=Totallambeatsday))
+
+
+
+plot(results$Total_DM[1:12]~month.name,type="l",col="blue")
+
+
+
